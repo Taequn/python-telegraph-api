@@ -148,4 +148,4 @@ class telegraphApi():
 		hour (Integer, 0-24):
 			If passed, the number of page views for the requested hour will be returned.'''
 
-		return self.callMethod(n_method=self.getPageList, a_method=locals().items())
+		return self.callMethod(n_method=self.getViews, a_method=locals().items())
