@@ -43,4 +43,4 @@ class telegraphApi():
 		return self.callMethod(n_method=self.getPageList, a_method=locals().items())
 
 	def getViews(self, path=None, year=None, month=None, day=None, hour=None):
-		return self.callMethod(n_method=self.getPageList, a_method=locals().items())
+		return self.callMethod(n_method=self.getViews, a_method=locals().items())
