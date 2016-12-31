@@ -1,3 +1,4 @@
+from HTMLtoNode import HTML_into_Node
 import requests
 
 MAIN_URL = 'https://api.telegra.ph/'
@@ -10,11 +11,17 @@ class telegraphApi():
 	def callMethod(self, n_method=None, a_method=None):
 		method = MAIN_URL + n_method.__name__+'?'
 		for x,y in a_method:
-			if x!='self' and y!=None: method+=x+'='+str(y)+'&'
-		response = self.http.get(method[:-1])
+			if x!='self' and x!='htmlContent' and x!='content' and y!=None: 
+				method+=x+'='+str(y)+'&'
+			
+			if x == 'htmlContent' and len(x)>0:
+				method+='content='+str(HTML_into_Node(y))+'&'
+		print(method[:-1])
+				
+
+		response = self.http.get(method[:-1].replace("'",'"'))
 		method = eval(response.text.replace('\/','/').replace('true','True').replace('false','False'))
 		return method
-
 
 	def createAccount(self, short_name=None, author_name=None, author_url=None):
 		'''Use this method to create a new Telegraph account. 
@@ -57,7 +64,7 @@ class telegraphApi():
 
 		return self.callMethod(n_method=self.getAccountInfo, a_method=locals().items())
 
-	def revokeAccessToken(self, access_token=self.auth):
+	def revokeAccessToken(self, access_token = None):
 		'''Use this method to revoke access_token and generate a new one, 
 		for example, if the user would like to reset all connected sessions.
 
@@ -68,8 +75,8 @@ class telegraphApi():
 		self.auth = resp['result']['access_token']
 		return resp
 
-	def createPage(self, access_token=self.auth, title=None, author_name=None, author_url=None,
-		content=None, return_content=False):
+	def createPage(self, access_token=None, title=None, author_name=None, author_url=None,
+		content=None, return_content=False, htmlContent=None):
 
 		'''Use this method to create a new Telegraph page. On success, returns a Page object.
 
@@ -89,8 +96,8 @@ class telegraphApi():
 		
 		return self.callMethod(n_method=self.createPage, a_method=locals().items())
 
-	def editPage(self, access_token=self.auth, path=None, title=None, content=None, 
-		author_name=None, author_url=None, return_content=False):
+	def editPage(self, access_token=None, path=None, title=None, content=None, 
+		author_name=None, author_url=None, return_content=False, htmlContent=None):
 
 		'''Use this method to edit an existing Telegraph page.
 
