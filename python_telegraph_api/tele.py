@@ -6,6 +6,7 @@ MAIN_URL = 'https://api.telegra.ph/'
 class telegraphApi():
 	def __init__(self):
 		self.http = requests.Session()
+		self.auth = None
 
 	def callMethod(self, n_method=None, a_method=None):
 		method = MAIN_URL + n_method.__name__+'?'
@@ -33,7 +34,9 @@ class telegraphApi():
 			Default profile link, opened when users click on the author's name below the title. 
 			Can be any link, not necessarily to a Telegram profile or channel.'''
 
-		return self.callMethod(n_method=self.createAccount, a_method=locals().items())
+		resp = self.callMethod(n_method=self.createAccount, a_method=locals().items())
+		self.auth = resp['result']['access_token']
+		return resp
 
 	def editAccountInfo(self, access_token=None, short_name=None, author_name=None, author_url=None):
 		'''Use this method to update information about a Telegraph account.
@@ -68,7 +71,9 @@ class telegraphApi():
 		access_token (String):
 			Required. Access token of the Telegraph account.'''
 
-		return self.callMethod(n_method=self.revokeAccessToken, a_method=locals().items())
+		resp = self.callMethod(n_method=self.revokeAccessToken, a_method=locals().items())
+		self.auth = resp['result']['access_token']
+		return resp
 
 	def createPage(self, access_token=None, title=None, author_name=None, author_url=None,
 		content=None, return_content=False, htmlContent=None):
@@ -125,7 +130,7 @@ class telegraphApi():
 
 		return self.callMethod(n_method=self.getPage, a_method=locals().items())
 
-	def getPageList(self, access_token=None, offset=0, limit=50):
+	def getPageList(self, access_token=self.auth, offset=0, limit=50):
 
 		'''Use this method to get a list of pages belonging to a Telegraph account. 
 		Returns a PageList object, sorted by most recently created pages first.
